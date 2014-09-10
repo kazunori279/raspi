@@ -1,0 +1,18 @@
+# playbook for installing Adafruit's DHT sensor driver on raspi
+# The original instruction can be found on:
+# https://learn.adafruit.com/dht-humidity-sensing-on-raspberry-pi-with-gdocs-logging/software-install-updated
+
+---
+- hosts: raspi 
+  sudo: yes 
+  remote_user: pi
+  vars:
+    work_dir: /home/pi
+    dht_dir: "{{ work_dir }}/Adafruit_Python_DHT"
+  tasks:
+    - git: repo=git@github.com:adafruit/Adafruit_Python_DHT.git
+           dest={{ dht_dir }} accept_hostkey=yes
+      sudo: no
+    - command: apt-get upgrade 
+    - command: apt-get install build-essential python-dev
+    - command: python setup.py install chdir={{ dht_dir }}
