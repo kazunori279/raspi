@@ -1,4 +1,11 @@
 #!/usr/bin/python
+#
+# Weather report: periodically reads temp, humidity and air pressure
+# from DHT22 and LPS331AP sensors connected to raspberry pi. Requires
+# Adafruite_DHT driver and i2ctools installed.
+#
+# Usage: sudo python weather_report.py
+# 
 
 import subprocess
 import Adafruit_DHT
@@ -44,11 +51,12 @@ if stderr != None and len(stderr.strip()) > 0:
     print "LPS init error: " + stderr
     exit() 
 
-# read LPS
-v, err = read_lps()
-print v
- 
-h, t = Adafruit_DHT.read_retry(Adafruit_DHT.DHT22, DHT22_GPIO)
-print h
-print t
+# read air pressure from LPS
+air_pressure, err = read_lps()
+print air_pressure 
+
+# read humidity and temp from DHT 
+humidity, temp = Adafruit_DHT.read_retry(Adafruit_DHT.DHT22, DHT22_GPIO)
+print humidity
+print temp 
 
