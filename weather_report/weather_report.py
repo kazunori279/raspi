@@ -19,19 +19,19 @@ def cmd_exec(cmd):
     return stdout, stderr
 
 def i2cget(reg):
-    return cmd_exec("sudo i2cget -y 1 " + LPS331_ADRS + " " + reg)
+    return cmd_exec("i2cget -y 1 " + LPS331_ADRS + " " + reg)
     
 def init_lps():
 
     # WHO_AM_I
-    stdout, stderr = cmd_exec("sudo i2cget -y 1 " + LPS331_ADRS + " 0x0f")
+    stdout, stderr = cmd_exec("i2cget -y 1 " + LPS331_ADRS + " 0x0f")
     if stderr != None:
         return stdout, stderr
     if stdout != "0xbb":
         return stdout, "WHO_AM_I result mismatch."
 
     # activate device
-    return cmd_exec("sudo i2cset -y 1 " + LPS331_ADRS + " 0x20 0x90")
+    return cmd_exec("i2cset -y 1 " + LPS331_ADRS + " 0x20 0x90")
 
 def read_lps():
 
