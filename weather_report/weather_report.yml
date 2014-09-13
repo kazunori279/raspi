@@ -1,0 +1,39 @@
+# weather_report.yml: an ansible playbook for installing weather_report tools.
+#
+# Usage: ansible-playbook weather_report.yml
+#
+# This installs the following tools:
+# - build-essential and python-dev
+# - Adafruit DHT driver 
+#   https://learn.adafruit.com/dht-humidity-sensing-on-raspberry-pi-with-gdocs-logging/software-install-updated
+# - i2c tools
+# - Fluentd
+# - fluent-logger-python
+
+---
+- hosts: raspi 
+  sudo: yes 
+  remote_user: pi
+  vars:
+    work_dir: /home/pi
+    dht_dir: "{{ work_dir }}/Adafruit_Python_DHT"
+    logger_dir: "{{ work_dir }}/fluent-logger-python"
+  tasks:
+
+    # dev tools and i2c tools
+    - command: apt-get upgrade 
+    - command: apt-get install build-essential python-dev i2c-tools
+
+    # Adafruit DHT drivers
+    - git: repo=git@github.com:adafruit/Adafruit_Python_DHT.git
+           dest={{ dht_dir }} accept_hostkey=yes
+      sudo: no
+    - command: python setup.py install chdir={{ dht_dir }}
+
+    # Fluentd
+    - command: aptitude install ruby-dev
+    - command: gem install fluentd
+
+    # pip, fluent-logger-python
+    - command: aptitude install python-pip
+    - command: pip install fluent-logger
