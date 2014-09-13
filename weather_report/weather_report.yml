@@ -10,9 +10,6 @@
 # - Fluentd
 # - fluent-logger-python
 
-
-
-
 ---
 - hosts: raspi 
   sudo: yes 
