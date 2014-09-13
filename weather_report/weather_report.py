@@ -7,11 +7,17 @@
 # Usage: sudo python weather_report.py
 # 
 
+import time
 import subprocess
 import Adafruit_DHT
+from fluent import sender
+from fluent import event
 
+# consts
 DHT22_GPIO = 4
 LPS331_ADRS = "0x5d"
+FL_TAG = "weather" # fluentd event tag
+SEND_INTERVAL = 10 # sec
 
 def cmd_exec(cmd):
     p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -42,16 +48,32 @@ def read_lps():
 
     # decoding the value
     return (int(out0, 16) + (int(out1, 16) * 0x100) + (int(out2, 16) * 0x10000)) / 4096.0
+
+def send_metrics():
+
+    # read atmospheric pressure from LPS
+    atmos = read_lps()
+
+    # read humidity and temp from DHT 
+    humidity, temp = Adafruit_DHT.read_retry(Adafruit_DHT.DHT22, DHT22_GPIO)
+
+    # write metrics to local fluentd
+    event.Event("metrics", {
+        "atmos": atmos,
+        "hum": humidity,
+        "temp": temp
+    })
     
 # init LPS     
 init_lps()
 
-# read air pressure from LPS
-air_pressure = read_lps()
-print air_pressure 
+# init fluentd
+sender.setup(FL_TAG)
 
-# read humidity and temp from DHT 
-humidity, temp = Adafruit_DHT.read_retry(Adafruit_DHT.DHT22, DHT22_GPIO)
-print humidity
-print temp 
-
+# measure and send the metrics periodically 
+last_checked = 0
+while True:
+    if time.time() - last_checked > SEND_INTERVAL:
+        last_checked = time.time()
+        send_metrics()
+    time.sleep(0.5)
