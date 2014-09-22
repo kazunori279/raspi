@@ -1,7 +1,6 @@
-# Weather Report: a Python script to measure temp, humidity and atmosperic pressure
-# from DHT22 and LPS331AP sensors connected to Raspberry Pi and send them to Google
-# BigQuery via Fluentd.
-#
+# Weather Report
+
+A Python script to measure temp, humidity and atmosperic pressure from DHT22 and LPS331AP sensors connected to Raspberry Pi and send them to Google BigQuery via Fluentd.
 
 ## Set up RasPi 
 
