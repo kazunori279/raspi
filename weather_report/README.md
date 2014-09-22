@@ -52,6 +52,7 @@ Open another console, run the python script.
 ```
 > cd ~/raspi/weather_report
 > sudo python weather_report.py
+```
 
 ## Run query on BigQuery
 
