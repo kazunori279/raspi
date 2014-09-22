@@ -34,6 +34,13 @@
     - command: aptitude install ruby-dev
     - command: gem install fluentd
 
-    # pip, fluent-logger-python
+    # pip, fluent-logger-python, fluent-plugin-bigquery
     - command: aptitude install python-pip
     - command: pip install fluent-logger
+    - command: fluent-gem install fluent-plugin-bigquery
+
+    # Weather Report python script 
+    - git: repo=git@github.com:kazunori279/raspi.git
+           dest={{ work_dir }} accept_hostkey=yes
+      sudo: no
+ 
