@@ -62,6 +62,10 @@ fi
 # if it's detecting, call AutoML API for detection
 if [ $1 = "detect" ]; then
 
+  # showing the listening pic
+  pics=`pwd`/pics
+  sudo fbi -T 2 -d /dev/fb1 -noverbose -a ${pics}/listening.png &> /dev/null
+
   # normalize and convert the wav to a spectrogram
   sox --norm=-3 ${filepath}_out.wav ${filepath}_norm.wav 
   sox ${filepath}_norm.wav -c 1 -n rate 16k spectrogram -r -h -o ${filepath}.png
@@ -83,14 +87,24 @@ if [ $1 = "detect" ]; then
   fi
 
   # call API
-  curl -s -X POST -H "Content-Type: application/json" -H "Authorization: Bearer `cat access_token`" https://automl.googleapis.com/v1beta1/projects/gcp-samples2/locations/us-central1/models/ICN5435848207315565962:predict -d @api_request.json > api_response.json
+  curl -s -X POST -H "Content-Type: application/json" -H "Authorization: Bearer `cat access_token`" https://automl.googleapis.com/v1beta1/projects/gcp-samples2/locations/us-central1/models/ICN3551748946371148672:predict -d @api_request.json > api_response.json
 
   # get detected label  
   label=`cat api_response.json | grep "displayName" | sed -r 's/.*"displayName": "(.*)".*/\1/'`
   score=`cat api_response.json | grep "score" | sed -r 's/.*"score": (0\...).*/\1/'`
   echo
-  echo "${label} ${score} "
+  echo "detected: ${label}, score: ${score} "
 
+  # ignore labels with score less than 0.7 
+  if [ `echo ${score} | sed -r "s/0.([0-6])[0-9]/low/"` = "low" ]; then
+    label="0"
+  fi
+
+  # show the pic 
+  sudo fbi -T 2 -d /dev/fb1 -noverbose -a ${pics}/${label}.png &> /dev/null
+  sleep 3
+  sudo fbi -T 2 -d /dev/fb1 -noverbose -a ${pics}/black.png &> /dev/null
+  sudo killall fbi 
 
 fi
 
