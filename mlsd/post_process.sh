@@ -89,7 +89,8 @@ if [ $1 = "detect" ]; then
   # call API
   curl -s -X POST -H "Content-Type: application/json" -H "Authorization: Bearer `cat access_token`" https://automl.googleapis.com/v1beta1/projects/gcp-samples2/locations/us-central1/models/ICN3551748946371148672:predict -d @api_request.json > api_response.json
 
-  # get detected label  
+  # get detected label 
+  cat api_response.json 
   label=`cat api_response.json | grep "displayName" | sed -r 's/.*"displayName": "(.*)".*/\1/'`
   score=`cat api_response.json | grep "score" | sed -r 's/.*"score": (0\...).*/\1/'`
   echo

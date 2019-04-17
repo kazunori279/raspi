@@ -15,6 +15,6 @@
 - Run `./prep.sh` to do data prep on the labelled sounds
 - Download `prepped.zip`, upload it to AutoML Vision and train it
 - Edit `post_process.sh` to set your model ID for AutoML prediction
-- Set up credential key for AutoML access with [the document](https://cloud.google.com/vision/automl/docs/using-the-api)
+- Set up credential key for AutoML access with [the document](https://cloud.google.com/vision/automl/docs/quickstart). If your access token is expired, remove access_token file to refresh it
 - Run `./main.sh detect` to start detecting sounds
 
