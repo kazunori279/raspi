@@ -90,6 +90,19 @@ prices_by_label = {}
 for i in range(len(labels)):
     prices_by_label[labels[i]] = prices[i]
 
+# init volume
+subprocess.run(['amixer', 'sset', 'PCM', '90%'])
+
+"""
+Camera and Edge TPU inits
+"""
+
+# init camera
+cam = cv2.VideoCapture(0)
+
+# init Edge TPU with TF Lite model
+tpu = ClassificationEngine('/home/pi/model.tflite')
+
 """
 UI initializations
 """
@@ -152,19 +165,6 @@ tk_cout_btn = tk.Button(tk_cout_frame, font=tk_font,
                         text='Check', height=2, command=checkout)
 tk_cout_btn.pack(side=tk.LEFT, ipadx=10)
 
-# init volume
-subprocess.run(['amixer', 'sset', 'PCM', '90%'])
-
-# load images
-label_images = {}
-for l in labels:
-    p = 'img/' + l + '.png'
-    if os.path.exists(p):
-        label_images[l] = ImageTk.PhotoImage(Image.open(p))
-        print('loaded: ' + p)
-blank_img = ImageTk.PhotoImage(Image.open('img/blank.png'))
-
-
 def create_handler(label):
     """
     Creates a button event handler for a label.
@@ -181,6 +181,15 @@ def create_handler(label):
     return handler
 
 
+# load images
+label_images = {}
+for l in labels:
+    p = 'img/' + l + '.png'
+    if os.path.exists(p):
+        label_images[l] = ImageTk.PhotoImage(Image.open(p))
+        print('loaded: ' + p)
+blank_img = ImageTk.PhotoImage(Image.open('img/blank.png'))
+
 # init label buttons
 label_buttons = {}
 label_detected_times = {}
@@ -195,15 +204,6 @@ for l in labels:
     b.pack(side=tk.LEFT)
     label_buttons[l] = fr
 
-"""
-Camera and Edge TPU inits
-"""
-
-# init camera
-cam = cv2.VideoCapture(0)
-
-# init Edge TPU with TF Lite model
-tpu = ClassificationEngine('/home/pi/model.tflite')
 
 """
 Main loop
@@ -242,7 +242,7 @@ def classify_image(img_pil):
         return None, None
     i, score = results[0]
     label = labels[i]
-    print(label + ": " + str(score))
+    # print(label + ": " + str(score))
     return label, score
 
 
@@ -275,12 +275,20 @@ def main():
     Main loop.
     """
     while True:
+        start = time.time()
         ui_updates()
+        print('UI update: ' + str(time.time() - start)) 
+
+        start = time.time()
         img_pil = capture_image()
+        print('Capture: ' + str(time.time() - start)) 
+
+        start = time.time()
         label, score = classify_image(img_pil)
         if label:
             show_or_hide_buttons(label, score)
-
+        print('Classify: ' + str(time.time() - start)) 
+        print('\n')
 
 if __name__ == '__main__':
     main()
